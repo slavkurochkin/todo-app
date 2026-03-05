@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.ci-sherlock/
+playwright-report.json
+test-results/
+playwright/.cache/
