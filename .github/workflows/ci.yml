@@ -19,7 +19,6 @@ jobs:
 
       - name: Run Playwright tests
         run: npx playwright test
-        continue-on-error: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -56,6 +55,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          SHERLOCK_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: ci-sherlock analyze
 
       - name: Upload history DB
