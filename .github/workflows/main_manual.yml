@@ -1,0 +1,77 @@
+name: Manual CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report.json
+          retention-days: 7
+
+  sherlock:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Playwright report
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+
+      - name: Restore history DB from previous run
+        uses: dawidd6/action-download-artifact@v6
+        continue-on-error: true
+        with:
+          name: sherlock-db
+          path: .ci-sherlock/
+          workflow: manual.yml
+          if_no_artifact_found: ignore
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install CI Sherlock
+        run: pip install git+https://github.com/slavkurochkin/ci-sherlock-agent.git --quiet
+
+      - name: Run CI Sherlock
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          SHERLOCK_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: ci-sherlock analyze
+
+      - name: Upload history DB
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sherlock-db
+          path: .ci-sherlock/history.db
+          retention-days: 30
+          overwrite: true
