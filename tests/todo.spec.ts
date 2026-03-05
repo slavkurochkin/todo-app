@@ -14,7 +14,7 @@ test('should add a todo item', async ({ page }) => {
 
 test('should add a todo by clicking Add button', async ({ page }) => {
   await page.getByPlaceholder('Add a task').fill('Walk the dog')
-  await page.getByRole('button', { name: 'Add' }).click()
+  await page.getByRole('button', { name: 'Addt' }).click()
   await expect(page.getByText('Walk the dog')).toBeVisible()
 })
 
