@@ -49,13 +49,14 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install CI Sherlock
+        run: pip install git+https://github.com/slavkurochkin/ci-sherlock-agent.git --quiet
+
       - name: Run CI Sherlock
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          pip install ci-sherlock --quiet
-          ci-sherlock analyze
+        run: ci-sherlock analyze
 
       - name: Upload history DB
         uses: actions/upload-artifact@v4
