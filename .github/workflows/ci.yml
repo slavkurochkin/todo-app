@@ -43,15 +43,6 @@ jobs:
         with:
           name: playwright-report
 
-      - name: Restore history DB from previous run
-        uses: dawidd6/action-download-artifact@v6
-        continue-on-error: true
-        with:
-          name: sherlock-db
-          path: .ci-sherlock/
-          workflow: ci.yml
-          if_no_artifact_found: ignore
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -76,4 +67,3 @@ jobs:
           name: sherlock-db
           path: .ci-sherlock/history.db
           retention-days: 30
-          overwrite: true
