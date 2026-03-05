@@ -58,7 +58,7 @@ export default function App() {
         <input
           type="text"
           className="todo-input"
-          placeholder="Adds a task"
+          placeholder="Add a task"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
